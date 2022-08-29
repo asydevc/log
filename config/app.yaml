@@ -1,0 +1,3 @@
+# config from github.com/fuyibing/framework-iris
+addr: ":9080"
+name: "FLog"
