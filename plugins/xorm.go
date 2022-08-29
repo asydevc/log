@@ -6,6 +6,7 @@ package plugins
 import (
 	"fmt"
 
+	"github.com/asydevc/log/v2"
 	xorm "xorm.io/xorm/log"
 )
 
