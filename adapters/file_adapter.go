@@ -6,14 +6,12 @@ package adapters
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/asydevc/log/v2/interfaces"
 	"gopkg.in/yaml.v3"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"sync"
-	"time"
-
-	"github.com/asydevc/log/v2/interfaces"
 )
 
 // 文件配置.
@@ -57,8 +55,8 @@ func (o *fileAdapter) send(line interfaces.LineInterface) {
 	}()
 	lines := o.body(line)
 	var file = line.ServiceName()
-	if o.Conf.UseMonth {
-		file = time.Now().Format("2006-01-02")
+	if o.Conf.UseMonth == true {
+		file = fmt.Sprintf("%.10s", line.Timeline())
 	}
 	// 判断目录是否存在
 	if _, err := os.Stat(o.Conf.Path); os.IsNotExist(err) {
@@ -66,10 +64,12 @@ func (o *fileAdapter) send(line interfaces.LineInterface) {
 	}
 	// 判断文件是否存在
 	filePath := filepath.Join(o.Conf.Path, file+".txt")
+	fmt.Printf("%s", filePath)
 
 	fi, _ := os.OpenFile(filePath, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0666)
 	defer fi.Close()
-	fi.WriteString(fmt.Sprintf("[%s][%s] %s", line.Level(), line.Time().Format("2006-01-02 15:04:05.000000000"), lines) + "\r\n")
+
+	fi.WriteString(fmt.Sprintf("[%s][%s] %s", line.Level(), line.Timeline(), lines) + "\r\n")
 }
 
 func NewFile() *fileAdapter {
