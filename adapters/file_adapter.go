@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"github.com/asydevc/log/v2/interfaces"
 	"gopkg.in/yaml.v3"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"sync"
@@ -40,14 +39,19 @@ func (o *fileAdapter) listen() {
 		for {
 			select {
 			case line := <-o.ch:
-				go o.send(line)
+				go func(line interfaces.LineInterface) {
+					err := o.send(line)
+					if err != nil {
+						return
+					}
+				}(line)
 			}
 		}
 	}()
 }
 
 // Send log.
-func (o *fileAdapter) send(line interfaces.LineInterface) {
+func (o *fileAdapter) send(line interfaces.LineInterface) (err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			o.handler(line)
@@ -58,18 +62,35 @@ func (o *fileAdapter) send(line interfaces.LineInterface) {
 	if o.Conf.UseMonth == true {
 		file = fmt.Sprintf("%.10s", line.Timeline())
 	}
-	// 判断目录是否存在
+	// 判断目录
 	if _, err := os.Stat(o.Conf.Path); os.IsNotExist(err) {
-		_ = os.MkdirAll(o.Conf.Path, 0666)
+		err = os.MkdirAll(o.Conf.Path, os.ModePerm)
+		if err != nil {
+			return err
+		}
 	}
 	// 判断文件是否存在
 	filePath := filepath.Join(o.Conf.Path, file+".txt")
-	fmt.Printf("%s", filePath)
 
-	fi, _ := os.OpenFile(filePath, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0666)
-	defer fi.Close()
+	// 创建文件
+	var fi *os.File
+	fi, err = os.OpenFile(filePath, os.O_WRONLY|os.O_APPEND|os.O_CREATE, os.ModePerm)
+	if err != nil {
+		return err
+	}
+	defer func(fi *os.File) {
+		err := fi.Close()
+		if err != nil {
+			return
+		}
+	}(fi)
 
-	fi.WriteString(fmt.Sprintf("[%s][%s] %s", line.Level(), line.Timeline(), lines) + "\r\n")
+	// 写文件
+	_, err = fi.WriteString(fmt.Sprintf("[%s][%s] %s", line.Level(), line.Timeline(), lines) + "\r\n")
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func NewFile() *fileAdapter {
@@ -77,7 +98,7 @@ func NewFile() *fileAdapter {
 	// Parse configuration.
 	// 1. base config.
 	for _, file := range []string{"./tmp/log.yaml", "../tmp/log.yaml", "./config/log.yaml", "../config/log.yaml"} {
-		body, err := ioutil.ReadFile(file)
+		body, err := os.ReadFile(file)
 		if err != nil {
 			continue
 		}
