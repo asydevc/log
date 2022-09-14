@@ -5,6 +5,7 @@ package adapters
 
 import (
 	"encoding/json"
+	"fmt"
 	"gopkg.in/yaml.v3"
 	"io/ioutil"
 	"os"
@@ -64,12 +65,11 @@ func (o *fileAdapter) send(line interfaces.LineInterface) {
 		_ = os.MkdirAll(o.Conf.Path, 0666)
 	}
 	// 判断文件是否存在
-	filePath := filepath.Join(o.Conf.Path+".txt", file)
-	if _, err := os.Stat(filePath); os.IsNotExist(err) {
-		fi, _ := os.Create(filePath)
-		defer fi.Close()
-		fi.Write([]byte(lines))
-	}
+	filePath := filepath.Join(o.Conf.Path, file+".txt")
+
+	fi, _ := os.OpenFile(filePath, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0666)
+	defer fi.Close()
+	fi.WriteString(fmt.Sprintf("[%s][%s] %s", line.Level(), line.Time().Format("2006-01-02 15:04:05.000000000"), lines) + "\r\n")
 }
 
 func NewFile() *fileAdapter {
