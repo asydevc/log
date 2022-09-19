@@ -109,6 +109,12 @@ func NewFile() *fileAdapter {
 		break
 	}
 	// 2. default value
+	// 2.1 has a config, but log path empty
+	if o.Conf != nil && o.Conf.Path == "" {
+		o.Conf.Path = "./logs"
+	}
+
+	// 2.2 has no config
 	if o.Conf == nil {
 		o.Conf = &fileConfig{Path: "./logs"}
 	}
