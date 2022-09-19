@@ -58,18 +58,19 @@ func (o *fileAdapter) send(line interfaces.LineInterface) (err error) {
 		}
 	}()
 	lines := o.body(line)
+	// define log filename
 	var file = line.ServiceName()
 	if o.Conf.UseMonth == true {
 		file = fmt.Sprintf("%.10s", line.Timeline())
 	}
-	// 判断目录
+	// creat log directory
 	if _, err := os.Stat(o.Conf.Path); os.IsNotExist(err) {
 		err = os.MkdirAll(o.Conf.Path, os.ModePerm)
 		if err != nil {
 			return err
 		}
 	}
-	// 判断文件是否存在
+	// combine
 	filePath := filepath.Join(o.Conf.Path, file+".txt")
 
 	// 创建文件
@@ -106,6 +107,10 @@ func NewFile() *fileAdapter {
 			continue
 		}
 		break
+	}
+	// 2. default value
+	if o.Conf == nil {
+		o.Conf = &fileConfig{Path: "./logs"}
 	}
 	o.listen()
 	return o

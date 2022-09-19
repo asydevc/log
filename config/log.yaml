@@ -18,6 +18,9 @@
 #         [idle-timeout]: 连结空闲N秒后自动关闭
 #         [max-conn-lifetime]:
 #
+# [file] File模式, 日志存储本地
+#         [path]: 存储路径 (默认./logs)
+#         [use-month]: 开启日期的日志格式 2006-01-02 (默认false)
 adapter: term
 level: debug
 time: "2006-01-02 15:04:05.999999"
