@@ -21,6 +21,12 @@
 # [file] File模式, 日志存储本地
 #         [path]: 存储路径 (默认./logs)
 #         [use-month]: 开启日期的日志格式 2006-01-02 (默认false)
+# [collect-path] 收集文件地址 (数组)
+#         - path1
+#         - path2
+# [remove-path] 移动日志地址
+# [scanner-interval] 扫描间隔时间 (单位s)
+# [batch] 单次发送日志数量
 adapter: term
 level: debug
 time: "2006-01-02 15:04:05.999999"
