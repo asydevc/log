@@ -98,7 +98,7 @@ func NewFile() *fileAdapter {
 	o := &fileAdapter{ch: make(chan interfaces.LineInterface), mu: new(sync.RWMutex)}
 	// Parse configuration.
 	// 1. base config.
-	for _, file := range []string{"./tmp/log.yaml", "../tmp/log.yaml", "./config/log.yaml", "../config/log.yaml"} {
+	for _, file := range []string{"./tmp/log.yaml", "../tmp/log.yaml", "./config/log.yaml", "../config/log.yaml", "../../configs/log.yaml"} {
 		body, err := os.ReadFile(file)
 		if err != nil {
 			continue
@@ -110,13 +110,14 @@ func NewFile() *fileAdapter {
 	}
 	// 2. default value
 	// 2.1 has a config, but log path empty
+	logPath := "./logs"
 	if o.Conf != nil && o.Conf.Path == "" {
-		o.Conf.Path = "./logs"
+		o.Conf.Path = logPath
 	}
 
 	// 2.2 has no config
 	if o.Conf == nil {
-		o.Conf = &fileConfig{Path: "./logs"}
+		o.Conf = &fileConfig{Path: logPath}
 	}
 	o.listen()
 	return o

@@ -6,8 +6,8 @@ package adapters
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"math/rand"
+	"os"
 	"time"
 
 	"github.com/gomodule/redigo/redis"
@@ -125,8 +125,8 @@ func NewRedis() *redisAdapter {
 	o := &redisAdapter{ch: make(chan interfaces.LineInterface), handler: NewTerm().Run}
 	// Parse configuration.
 	// 1. base config.
-	for _, file := range []string{"./tmp/log.yaml", "../tmp/log.yaml", "./config/log.yaml", "../config/log.yaml"} {
-		body, err := ioutil.ReadFile(file)
+	for _, file := range []string{"./tmp/log.yaml", "../tmp/log.yaml", "./config/log.yaml", "../config/log.yaml", "../../config/log.yaml"} {
+		body, err := os.ReadFile(file)
 		if err != nil {
 			continue
 		}

@@ -5,7 +5,6 @@ package log
 
 import (
 	"fmt"
-	"io/ioutil"
 	"net"
 	"os"
 	"regexp"
@@ -62,7 +61,7 @@ func newConfiguration() interfaces.ConfigInterface {
 		Name string `yaml:"name"`
 	}{}
 	for _, file := range []string{"./tmp/app.yaml", "../tmp/app.yaml", "./config/app.yaml", "../config/app.yaml"} {
-		body, err := ioutil.ReadFile(file)
+		body, err := os.ReadFile(file)
 		if err != nil {
 			continue
 		}
@@ -100,7 +99,7 @@ func (o *configuration) GetTrace() (string, string, string) {
 func (o *configuration) LoadYaml(file string) (err error) {
 	var body []byte
 	// 1. open file.
-	if body, err = ioutil.ReadFile(file); err != nil {
+	if body, err = os.ReadFile(file); err != nil {
 		return
 	}
 	// 2. parse yaml.
