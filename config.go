@@ -50,7 +50,7 @@ func newConfiguration() interfaces.ConfigInterface {
 		pid:         os.Getpid(),
 	}
 	// 2. extensions.
-	for _, file := range []string{"./tmp/log.yaml", "../tmp/log.yaml", "./config/log.yaml", "../config/log.yaml"} {
+	for _, file := range []string{"./tmp/log.yaml", "../tmp/log.yaml", "./config/log.yaml", "../config/log.yaml", "../../configs/log.yaml"} {
 		if o.LoadYaml(file) == nil {
 			break
 		}
@@ -60,7 +60,7 @@ func newConfiguration() interfaces.ConfigInterface {
 		Addr string `yaml:"addr"`
 		Name string `yaml:"name"`
 	}{}
-	for _, file := range []string{"./tmp/app.yaml", "../tmp/app.yaml", "./config/app.yaml", "../config/app.yaml"} {
+	for _, file := range []string{"./tmp/app.yaml", "../tmp/app.yaml", "./config/app.yaml", "../config/app.yaml", "../../configs/app.yaml"} {
 		body, err := os.ReadFile(file)
 		if err != nil {
 			continue
